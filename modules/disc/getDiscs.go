@@ -7,6 +7,8 @@ import (
 	"strings"
 	"log"
 	"sort"
+	"encoding/csv"
+	"fmt"
 )
 
 func GetDiscsList() []string {
@@ -28,13 +30,14 @@ func GetDiscsList() []string {
 	}
 	return discs
 }
-func GetPartitionList(deviceName string) []string {
+func GetPartitionList(deviceName string) ([]string, error) {
+
 	deviceName = strings.TrimPrefix(deviceName, "/dev/")
 	deviceName = strings.TrimSuffix(deviceName, "/")
 	dev, err := os.Open("/dev")
 
 	if err != nil {
-		log.Fatalln("cannot open the directory /dev are you sure you are on unix machine? ")
+		return nil, fmt.Errorf("cannot open the directory /dev are you sure you are on unix machine? ")
 	}
 	defer dev.Close()
 	partitions := make([]string, 0, 5)
@@ -46,5 +49,39 @@ func GetPartitionList(deviceName string) []string {
 		partitions = append(partitions, name)
 	}
 	sort.Strings(partitions)
-	return partitions
+	return partitions, nil
+}
+
+func GetMounts() ([]MountInfo, error) {
+	const (
+		device    = iota
+		mountPath
+		fsType
+		options
+	)
+	mounts, err := os.Open("/proc/mounts")
+	if err != nil {
+		return nil, fmt.Errorf("cannot open the directory /proc are you sure you are on unix machine? ")
+	}
+	defer mounts.Close()
+	r := csv.NewReader(mounts)
+	r.TrimLeadingSpace = true
+	r.Comma = ' '
+	mountsSlc := make([]MountInfo, 0)
+	for {
+		line, err := r.Read()
+		if err != nil {
+			break
+		}
+		if !strings.HasPrefix(line[device], "/dev") {
+			continue
+		}
+		mountsSlc = append(mountsSlc, MountInfo{
+			Device:    line[device],
+			MountPath: line[mountPath],
+			FSType:    line[fsType],
+			Options:   line[options],
+		})
+	}
+	return mountsSlc, nil
 }

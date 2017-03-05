@@ -9,3 +9,10 @@ const (
 	GB
 	TB
 )
+
+type MountInfo struct {
+	Device    string
+	MountPath string
+	FSType    string
+	Options   string
+}
