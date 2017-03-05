@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>test</title>
+	<style>
+		table {
+			text-align: center;
+			width: 100vw;
+			margin-bottom: 10px;
+		}
+
+		.title {
+			border-bottom: black solid 2px;
+		}
+	</style>
+</head>
+<body>
+
+<table>
+	<thead>
+	<tr>
+		<th colspan="7" class="title">Discs</th>
+	</tr>
+	</thead>
+	<thead>
+	<tr>
+		<th>Device</th>
+		<th>Mount Point</th>
+		<th>Size</th>
+		<th>Used</th>
+		<th>Free</th>
+		<th>File System</th>
+		<th>Mount Options</th>
+	</tr>
+	</thead>
+	{{range .Discs}}
+	<tr>
+		<td>{{.Device}}</td>
+		<td>{{.MountPath}}</td>
+		<td>{{.Total}}</td>
+		<td>{{.Used}}</td>
+		<td>{{.Free}}</td>
+		<td>{{.FSType}}</td>
+		<td>{{.Options}}</td>
+	</tr>
+	{{end}}
+</table>
+<table>
+	<thead>
+	<tr>
+		<th colspan="7" class="title">Cpu</th>
+	</tr>
+	</thead>
+	<thead>
+	<tr>
+		<th>Cpu Brand</th>
+		<th>Cpu Model</th>
+		<th>Cpu Cores</th>
+	</tr>
+	</thead>
+	{{with .Cpu}}
+	<tr>
+		<td>{{.Brand}}</td>
+		<td>{{.Model}}</td>
+		<td>{{.CpuCount}}</td>
+	</tr>
+	{{end}}
+</table>
+<table>
+	<thead>
+	<tr>
+		<th colspan="7" class="title">Cpu Cores Info</th>
+	</tr>
+	</thead>
+	<thead>
+	<tr>
+		<th>Core Id</th>
+		<th>Cores</th>
+		<th>Clock Speed (MHz)</th>
+		<th>Cache Size</th>
+	</tr>
+	</thead>
+	{{with .Cpu}}
+	{{range .Cores}}
+	<tr>
+		<td>{{.processor}}</td>
+		<td>{{index . "cpu cores"}}</td>
+		<td>{{index . "cpu MHz"}}</td>
+		<td>{{index . "cache size"}}</td>
+	</tr>
+	{{end}}
+	{{end}}
+</table>
+<table>
+	<thead>
+	<tr>
+		<th colspan="7" class="title">Cpu Load</th>
+	</tr>
+	</thead>
+	<thead>
+	<tr>
+		<th>1 Minute</th>
+		<th>5 minutes</th>
+		<th>15 minutes</th>
+	</tr>
+	</thead>
+	{{with .Cpu.LoadAvg}}
+	<tr>
+		<td>{{.Minute}}</td>
+		<td>{{.Minute5}}</td>
+		<td>{{.Minute15}}</td>
+	</tr>
+	{{end}}
+</table>
+</body>
+</html>
