@@ -1,10 +1,10 @@
 package main
 
 import (
-	"github.com/pressly/chi"
 	"net/http"
-	"osList/render"
-	"osList/ws"
+	"github.com/pressly/chi"
+	"linuxSysMonitor/render"
+	"linuxSysMonitor/ws"
 )
 
 func main() {
