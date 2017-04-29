@@ -23,7 +23,7 @@ func MainTemplate() *chi.Mux {
 		tvar.Discs = make([]Mounts, 0)
 		tmpMnts, err := disc.GetMounts()
 		if err != nil {
-			fmt.Println(err)
+			log.Fatalln(err)
 			tmpMnts = []disc.MountInfo{}
 		}
 		for _, mount := range tmpMnts {
@@ -38,15 +38,15 @@ func MainTemplate() *chi.Mux {
 		}
 		tvar.Cpu, err = cpu.GetCpuInfo()
 		if err != nil {
-			fmt.Println(err)
+			log.Fatalln(err)
 		}
 		tvar.Cpu.LoadAvg, err = cpu.GetCpuLoad()
 		if err != nil {
-			fmt.Println(err)
+			log.Fatalln(err)
 		}
 		err = t.Execute(w, *tvar)
 		if err != nil {
-			fmt.Println(err)
+			log.Fatalln(err)
 		}
 	})
 	return rt
