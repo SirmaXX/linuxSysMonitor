@@ -1,8 +1,8 @@
 package render
 
 import (
-	"osList/modules/disc"
-	"osList/modules/cpu"
+	"../modules/disc"
+	"../modules/cpu"
 )
 
 type Mounts struct {

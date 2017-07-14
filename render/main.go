@@ -1,13 +1,14 @@
 package render
 
 import (
-	"github.com/pressly/chi"
+	"fmt"
+	"log"
 	"net/http"
 	"text/template"
-	"log"
-	"osList/modules/disc"
-	"fmt"
-	"osList/modules/cpu"
+
+	"github.com/pressly/chi"
+	"../modules/cpu"
+	"../modules/disc"
 )
 
 func MainTemplate() *chi.Mux {
