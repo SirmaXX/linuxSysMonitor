@@ -1,0 +1,77 @@
+
+
+html, body, .container-fluid, .row {
+    background-image: url(../img/Dust-White-Seamless-pattern-for-website-background.jpg);
+	height: 100%;
+  list-style-type:none;
+}
+
+
+
+.yanliste{list-style-type:none; padding-top:1vh;padding-bottom:1vh;margin-top:2vh;color:white;}
+
+.kk{color:white;}
+
+.glyphicon  {
+    font-size: 23px;
+}
+.fa {
+    font-size: 23px;
+    margin-right:1em;
+    color:white;
+}
+analiste{ text-align:inherit;margin-right:1em;}
+.sidebar {
+  background-color:#293a4a;
+   color:white;
+   
+}
+
+@media (min-width: 992px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 1000;
+    display: block;
+    background-color:#293a4a;
+  }
+}
+
+#some-element {
+  border: 1px solid #ccc;
+  display: none;
+  font-size: 10px;
+  margin-top: 10px;
+  padding: 5px;
+  text-transform: uppercase;
+}
+
+#some-div #some-element{
+    visibility: hidden;
+    width: 120px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+}
+#some-div:hover #some-element{
+    visibility: visible;
+      display: block;
+}
+
+ #merkez{position:static;text-align:center;}
+.chart {
+  background: white;
+  width: 300px;
+  height: 100px;
+  border-left: 1px dotted #555;
+  border-bottom: 1px dotted #555;
+  padding: 20px 20px 20px 0;
+}
