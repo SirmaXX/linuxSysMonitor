@@ -18,7 +18,9 @@ show_menu() {
     echo "  4) Processes"
     echo "  5) Open Ports"
     echo "  6) Logged Users"
-    echo "  7) All"
+    echo "  7) Docker Containers"
+    echo "  8) Log Dosyalari"
+    echo "  9) All"
     echo "  0) Cikis"
     echo ""
     printf "Seciminiz: "
@@ -107,6 +109,89 @@ show_users() {
     echo "Toplam: $count kullanici"
 }
 
+show_docker() {
+    echo ""
+    echo ">> DOCKER CONTAINERS"
+    
+    if ! command -v docker >/dev/null 2>&1; then
+        echo "Docker yuklu degil"
+        return
+    fi
+    
+    if ! docker info >/dev/null 2>&1; then
+        echo "Docker calismiyior veya yetki yok (sudo ile dene)"
+        return
+    fi
+    
+    running=$(docker ps -q 2>/dev/null | wc -l)
+    stopped=$(docker ps -aq --filter "status=exited" 2>/dev/null | wc -l)
+    total=$(docker ps -aq 2>/dev/null | wc -l)
+    
+    echo "Toplam: $total  |  Calisan: $running  |  Durmus: $stopped"
+    echo ""
+    
+    if [ "$total" -gt 0 ]; then
+        echo "NAME                 STATUS          CPU%    MEM         PORTS"
+        echo "-------------------  -------------  ------  ----------  -----"
+        docker ps -a --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" 2>/dev/null | tail -n +2 | head -15 | while read line; do
+            name=$(echo "$line" | awk '{print $1}')
+            status=$(echo "$line" | awk '{print $2, $3}')
+            ports=$(echo "$line" | awk '{$1=$2=$3=""; print $0}' | sed 's/^ *//')
+            
+            # CPU ve RAM bilgisi (sadece calisan containerlar icin)
+            stats=$(docker stats --no-stream --format "{{.CPUPerc}}\t{{.MemUsage}}" "$name" 2>/dev/null)
+            if [ -n "$stats" ]; then
+                cpu=$(echo "$stats" | awk -F'\t' '{print $1}')
+                mem=$(echo "$stats" | awk -F'\t' '{print $1}')
+            else
+                cpu="-"
+                mem="-"
+            fi
+            
+            printf "%-20s %-14s %6s  %-10s  %s\n" "$name" "$status" "$cpu" "$mem" "$ports"
+        done
+    fi
+}
+
+show_logs() {
+    echo ""
+    echo ">> LOG DOSYALARI (/var/log)"
+    
+    if [ ! -d /var/log ]; then
+        echo "/var/log dizini bulunamadi"
+        return
+    fi
+    
+    # Toplam log boyutu
+    total_size=$(du -sh /var/log 2>/dev/null | awk '{print $1}')
+    echo "Toplam log boyutu: $total_size"
+    echo ""
+    
+    # Disk kullanim yuzdesi
+    log_disk=$(df /var/log 2>/dev/null | awk 'NR==2 {print $5}')
+    echo "Log disk kullanimi: $log_disk"
+    echo ""
+    
+    echo ">> EN BUYUK 15 LOG DOSYASI"
+    echo "BOYUT      DOSYA"
+    echo "---------  -----"
+    find /var/log -type f 2>/dev/null | xargs du -h 2>/dev/null | sort -rh | head -15 | awk '{printf "%-10s %s\n", $1, $2}'
+    
+    echo ""
+    echo ">> SON 24 SAATTE DEGISEN LOGLAR"
+    echo "BOYUT      DOSYA"
+    echo "---------  -----"
+    find /var/log -type f -mtime -1 2>/dev/null | xargs du -h 2>/dev/null | sort -rh | head -10 | awk '{printf "%-10s %s\n", $1, $2}'
+    
+    # Uyari: Buyuk log dosyalari
+    echo ""
+    big_logs=$(find /var/log -type f -size +100M 2>/dev/null | wc -l)
+    if [ "$big_logs" -gt 0 ]; then
+        echo "!! UYARI: $big_logs adet 100MB ustu log dosyasi var!"
+        find /var/log -type f -size +100M 2>/dev/null | xargs du -h 2>/dev/null | sort -rh
+    fi
+}
+
 show_all() {
     show_cpu
     show_ram
@@ -114,6 +199,8 @@ show_all() {
     show_processes
     show_ports
     show_users
+    show_docker
+    show_logs
 }
 
 wait_enter() {
@@ -136,7 +223,9 @@ while true; do
         4) show_processes ;;
         5) show_ports ;;
         6) show_users ;;
-        7) show_all ;;
+        7) show_docker ;;
+        8) show_logs ;;
+        9) show_all ;;
         0|q|Q) echo "Cikis..."; exit 0 ;;
         *) echo "Gecersiz secim!" ;;
     esac
